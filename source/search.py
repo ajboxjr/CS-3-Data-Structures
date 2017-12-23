@@ -18,7 +18,7 @@ def linear_search_iterative(array, item):
 
 def linear_search_recursive(array, item, index=0):
     # TODO: implement linear search recursively here
-    if len(array)-1 != index:
+    if len(array)-1 >= index:
         if item == array[index]:
             return index
         else:
@@ -71,22 +71,25 @@ def binary_search_recursive(array, item, left=None, right=None):
     pass
     # once implemented, change binary_search to call binary_search_recursive
     # to verify that your recursive implementation passes all tests
+    #Setting Initial Values
     if left == None or right == None:
         left = 0
         right = len(array)-1
+
+    # Get mid and remove decimal points
     mid = int((left+right)/2)
     if left <= right:
-        if array[mid] < item:
-            binary_search_recursive(array,item, mid+1, right)
-        elif item < array[mid]:
-            binary_search_recursive(array,item, left, mid-1)
-        elif array[mid] == item:
+        if array[mid] == item:
             print("Item {} found {}".format(array[mid], mid))
-            return int(mid)
+            return mid
+        elif array[mid] < item:
+            return binary_search_recursive(array,item, mid+1, right)
+        elif item < array[mid]:
+            return binary_search_recursive(array,item, left, mid-1)
     else:
         print("Item {} not found".format(item))
         return None
 
 if __name__ == '__main__':
     names = ["Alex","Brian","Julia","Kojin","Nabil","Nick","Winnie","Sue"]
-    binary_search(names,"Brian")
+    print(binary_search(names,"Nick"))
