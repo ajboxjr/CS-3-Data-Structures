@@ -25,15 +25,23 @@ def decode(digits, base):
     result = 0
     reverse_digit = str(digits)[::-1]
 
-    if base == 16:
-        for (index,value) in enumerate(reverse_digit):
-            if ord(value) >= 97 and ord(value) <= 102:
+    #For Radix conversion
+    if "." in reverse_digit:
+        decimal, whole = reverse_digit.split(".")
+        for i in range(len(decimal)):
+            if ord(decimal[i]) >= 97 and ord(decimal[i]) <= 102:
+                
+            result += base**(-i-1)*int(decimal[i])
+        print(result)
+        reverse_digit = whole
 
-                # converting unicode of char to int - 87 ex. a= 97-87=10
+
+    for (index,value) in enumerate(reverse_digit):
+
+            #For Base 16
+            # converting unicode of char to int - 87 ex. a= 97-87=10
+            if ord(value) >= 97 and ord(value) <= 102:
                 value = ord(value)-87
-            result += (base**index) * int(value)
-    else:
-        for (index,value) in enumerate(reverse_digit):
             result += (base**index) * int(value)
 
     print("{}{} == {}{}".format(digits,sub(base), result,sub(10)))
@@ -48,6 +56,7 @@ def encode(number, base):
     # Handle up to base 36 [0-9a-z]
     assert 2 <= base <= 36, 'base is out of range: {}'.format(base)
     assert number >= 0, 'number is negative: {}'.format(number)
+    print(divmod(int(number), 1))
 
     #Whole  is the whole version value of the number
     whole = number
@@ -55,7 +64,6 @@ def encode(number, base):
     # Handle unsigned numbers only for now
     # DONE__: Encode number in binary (base 2)
     # DONE__: Encode number in any base (2 up to 36)
-
     if base >= 16:
         while whole > 0:
             whole, remainder = divmod(whole, base)
@@ -108,7 +116,7 @@ def convert(digits, base1, base2):
 def main():
     """Read command-line arguments and convert given digits between bases."""
     import sys
-    encode(248975,25)
+    decode("1101.101",2)
     args = sys.argv[1:]  # Ignore script file name
     if len(args) == 3:
         digits = args[0]
