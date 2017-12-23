@@ -27,8 +27,10 @@ def decode(digits, base):
 
     if base == 16:
         for (index,value) in enumerate(reverse_digit):
-            if ord(value) > 64 and ord(value) < 71:
-                value = ord(value)-55
+            if ord(value) >= 97 and ord(value) <= 102:
+
+                # converting unicode of char to int - 87 ex. a= 97-87=10
+                value = ord(value)-87
             result += (base**index) * int(value)
     else:
         for (index,value) in enumerate(reverse_digit):
@@ -52,14 +54,14 @@ def encode(number, base):
 
     # Handle unsigned numbers only for now
     # DONE__: Encode number in binary (base 2)
-    # DONE: Encode number in any base (2 up to 36)
+    # DONE__: Encode number in any base (2 up to 36)
 
-    if base == 16:
+    if base >= 16:
         while whole > 0:
             whole, remainder = divmod(whole, base)
             # If the remainder is greater than 10 use chars A-F
             if remainder >= 10:
-                remainder = chr(remainder+55)
+                remainder = chr(remainder+87)
             result += str(remainder)
         result = result[::-1]
     else:
@@ -106,6 +108,7 @@ def convert(digits, base1, base2):
 def main():
     """Read command-line arguments and convert given digits between bases."""
     import sys
+    encode(248975,25)
     args = sys.argv[1:]  # Ignore script file name
     if len(args) == 3:
         digits = args[0]
