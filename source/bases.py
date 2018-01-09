@@ -1,6 +1,8 @@
 #!python
 
 import string
+import decimal
+decimal.getcontext().prec = 3
 # Hint: Use these string constants to encode/decode hexadecimal digits and more
 # string.digits is '0123456789'
 # string.hexdigits is '0123456789abcdefABCDEF'
@@ -9,6 +11,32 @@ import string
 # string.ascii_letters is ascii_lowercase + ascii_uppercase
 # string.printable is digits + ascii_letters + punctuation + whitespace
 
+
+# Return subscript of base
+def sub(base):
+    str_base = str(base)
+    subscript = ""
+    for char in str_base:
+         subscript +=chr(0x2080+int(char))
+    return subscript
+
+"""
+In: str 0-9a-Z
+out: str base_10
+"""
+def base_to_ten(value):
+    if ord(value) >= 97 and ord(value) <= 102:
+        value = ord(value)-87
+    return value
+
+"""
+In: int base_x
+out: int base_10
+"""
+def ten_to_base(value):
+    if value >= 10:
+        value = chr(value+87)
+    return value
 
 def decode(digits, base):
     """Decode given digits in given base to number in base 10.
@@ -23,26 +51,28 @@ def decode(digits, base):
 
     # Sum of places for encoding
     result = 0
-    reverse_digit = str(digits)[::-1]
+    whole = ""
+    decimal = ""
 
-    #For Radix conversion
-    if "." in reverse_digit:
-        decimal, whole = reverse_digit.split(".")
-        for i in range(len(decimal)):
-            if ord(decimal[i]) >= 97 and ord(decimal[i]) <= 102:
-                
-            result += base**(-i-1)*int(decimal[i])
-        print(result)
-        reverse_digit = whole
+    #Radix Numbers(decimal)
+    if "." in digits:
+        whole, decimal = digits.split(".")
+        #Iterate through decimal x^-1_, x^-2
+        for (index, value) in enumerate(decimal):
+            index= -int(index) - 1
+            #determine and convert a values (0-9a-Z) to base 10
+            value = base_to_ten(value)
+            result += (base ** index) * int(value)
+    else:
+        whole = str(digits)
 
-
-    for (index,value) in enumerate(reverse_digit):
-
+    #Whole Numbers
+    #Iterate through whole number backwards  x^0_, x^1
+    for (index,value) in enumerate(whole[::-1]):
             #For Base 16
             # converting unicode of char to int - 87 ex. a= 97-87=10
-            if ord(value) >= 97 and ord(value) <= 102:
-                value = ord(value)-87
-            result += (base**index) * int(value)
+            value = base_to_ten(value)
+            result += (base ** index) * int(value)
 
     print("{}{} == {}{}".format(digits,sub(base), result,sub(10)))
     return result
@@ -52,43 +82,38 @@ def encode(number, base):
     number: int -- integer representation of number (in base 10)
     base: int -- base to convert to
     return: str -- string representation of number (in given base)"""
-    result = ""
-    # Handle up to base 36 [0-9a-z]
     assert 2 <= base <= 36, 'base is out of range: {}'.format(base)
     assert number >= 0, 'number is negative: {}'.format(number)
-    print(divmod(int(number), 1))
-
-    #Whole  is the whole version value of the number
-    whole = number
-
-    # Handle unsigned numbers only for now
     # DONE__: Encode number in binary (base 2)
     # DONE__: Encode number in any base (2 up to 36)
-    if base >= 16:
-        while whole > 0:
-            whole, remainder = divmod(whole, base)
-            # If the remainder is greater than 10 use chars A-F
-            if remainder >= 10:
-                remainder = chr(remainder+87)
-            result += str(remainder)
-        result = result[::-1]
-    else:
-        while whole > 0:
-            whole, remainder = divmod(whole, base)
-            result += str(remainder)
-        result = result[::-1]
-    # TODO: Encode number in hexadecimal (base 16)
+    # Done__: Encode number in hexadecimal (base 16)
+    result = ""
+    whole = 0
+    #Whole  is the whole version value of the number
+    remainder = decimal.Decimal(number)-int(number)
+
+    #For repeating numbers add a precision count
+    precision_count = 3
+
+    if remainder:
+        while remainder  > .01 and len(result) <= precision_count:
+            product = remainder*base
+
+            whole, remainder = int(product), product-int(product)
+            result += str(ten_to_base(whole))
+        result = str(result)[::-1]+"."
+        whole = int(number)
+
+    #Whole Numbers
+    while whole > 0:
+        whole, remainder = divmod(whole, base)
+        print(whole, remainder)
+        # If the remainder is greater than 10 use chars A-F
+        result += str(ten_to_base(remainder))
+    result = result[::-1]
 
     print("{}{} == {}{}".format(number,sub(10),result,sub(base)))
     return result
-
-
-def sub(base):
-    str_base = str(base)
-    subscript = ""
-    for char in str_base:
-         subscript +=chr(0x2080+int(char))
-    return subscript
 
 def convert(digits, base1, base2):
     """Convert given digits in base1 to digits in base2.
@@ -109,14 +134,10 @@ def convert(digits, base1, base2):
     print("{}{} == {}{}".format(digits,sub(base1), result, sub(base2)))
     return result
 
-    # ...
-    # ...
-
 
 def main():
     """Read command-line arguments and convert given digits between bases."""
     import sys
-    decode("1101.101",2)
     args = sys.argv[1:]  # Ignore script file name
     if len(args) == 3:
         digits = args[0]
