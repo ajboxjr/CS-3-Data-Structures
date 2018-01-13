@@ -24,6 +24,11 @@ class BasesDecodeTest(unittest.TestCase):
         assert decode('1110', 2) == 14
         assert decode('1111', 2) == 15
 
+    def test_encode_radix(self):
+        assert encode(123, 2) == "1111011"
+        assert encode(12.3,2) == "1100.0100"
+        assert encode(999.999, 16) == "3e7.g"
+
     def test_decode_decimal(self):
         assert decode('5', 10) == 5
         assert decode('9', 10) == 9
@@ -81,6 +86,12 @@ class BasesDecodeTest(unittest.TestCase):
         assert decode('101101', 25) == 9781876
         assert decode('101101', 32) == 33588225
         assert decode('101101', 36) == 60514129
+        
+    def test_decode_radix(self):
+        assert decode('.00001', 2) == 0.03125
+        assert decode('afa.faf', 16) == 2810.980224609375
+        assert decode('cc.123', 15) == 192.07644444444443
+
 
 
 class BasesEncodeTest(unittest.TestCase):
@@ -264,6 +275,10 @@ class BasesConvertTest(unittest.TestCase):
         assert convert('1110101001100010', 2, 16) == 'ea62'
         assert convert('1111101101110011', 2, 16) == 'fb73'
 
+    def test_convert_radix(self):
+        assert convert('aafa.ac',16,10) == "43770.672"
+        assert convert('9klm1a',32,10) == "323672106"
+        assert convert('98', 10,22) == '4a'
 
 if __name__ == '__main__':
     unittest.main()
