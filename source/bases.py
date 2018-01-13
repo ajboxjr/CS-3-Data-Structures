@@ -3,6 +3,7 @@
 import string
 import decimal
 decimal.getcontext().prec = 3
+
 # Hint: Use these string constants to encode/decode hexadecimal digits and more
 # string.digits is '0123456789'
 # string.hexdigits is '0123456789abcdefABCDEF'
@@ -25,7 +26,7 @@ In: str 0-9a-Z
 out: str base_10
 """
 def base_to_ten(value):
-    if ord(value) >= 97 and ord(value) <= 102:
+    if ord(value) >= 97 and ord(value) <= 122:
         value = ord(value)-87
     return value
 
@@ -54,6 +55,10 @@ def decode(digits, base):
     whole = ""
     decimal = ""
 
+    #Optional ... DO not evaulate if base 10
+    # if base == 10:
+    #     return float(digits)
+
     #Radix Numbers(decimal)
     if "." in digits:
         whole, decimal = digits.split(".")
@@ -74,7 +79,7 @@ def decode(digits, base):
             value = base_to_ten(value)
             result += (base ** index) * int(value)
 
-    print("{}{} == {}{}".format(digits,sub(base), result,sub(10)))
+    # print("{}{} == {}{}".format(digits,sub(base), result,sub(10)))
     return result
 
 def encode(number, base):
@@ -89,30 +94,32 @@ def encode(number, base):
     # Done__: Encode number in hexadecimal (base 16)
     result = ""
     whole = 0
+    remainder = 0
+
     #Whole  is the whole version value of the number
-    remainder = decimal.Decimal(number)-int(number)
+    whole = int(number)
+    remainder = decimal.Decimal(number)-whole
 
     #For repeating numbers add a precision count
     precision_count = 3
 
     if remainder:
-        while remainder  > .01 and len(result) <= precision_count:
+        while remainder  > .0001 and len(result) <= precision_count:
             product = remainder*base
-
             whole, remainder = int(product), product-int(product)
             result += str(ten_to_base(whole))
         result = str(result)[::-1]+"."
+
+        #set the whole number the int of float
         whole = int(number)
 
-    #Whole Numbers
-    while whole > 0:
+    while whole  > 0:
         whole, remainder = divmod(whole, base)
-        print(whole, remainder)
         # If the remainder is greater than 10 use chars A-F
         result += str(ten_to_base(remainder))
     result = result[::-1]
 
-    print("{}{} == {}{}".format(number,sub(10),result,sub(base)))
+    # print("{}{} == {}{}".format(number,sub(10),result,sub(base)))
     return result
 
 def convert(digits, base1, base2):
@@ -129,6 +136,9 @@ def convert(digits, base1, base2):
     # DONE__: Convert digits from base 10 to base 16 (and vice versa)
     # DONE__: Convert digits from any base to any base (2 up to 36)
     result = ""
+
+    #decoded = decode(digits,base1)
+    #encoded = encode(decoded,base2)
 
     result =  encode(decode(digits,base1),base2)
     print("{}{} == {}{}".format(digits,sub(base1), result, sub(base2)))
