@@ -1,71 +1,70 @@
 from bases import *
-#Twos compliment
-#With Decimal
 
-def decimal_to_binary(decimal):
-    """Convert decimal to binary
-    In: (int) decimal
-    Out: (int) binary
-    """
-    return format(decimal, 'b')
 
-def ones_compliment_decimal(number, bits):
-    #Check if the number in binary <= to num of bits
-    assert number < 0
-    assert len(encode(abs(number),2 )) <= bits
+def digit_to_binary(digit):
+    """Convert digit into binary
+    In: (int) digit negative or positive
+    Out: (str) binary """
+    assert type(digit) == int
+    binary = format(abs(digit), 'b')
+    formatted_binary = format_binary(binary, bit_length_rounded(binary))
+    print("{}  => {}{}".format(digit, formatted_binary,sub(2)))
+    return formatted_binary
+    
+def bit_length_rounded(binary):
+    """Round bit length up by fours ex. 5 => 2
+    In: (str) Binary numbers
+    Out: (int) nibbles rounded up by four"""
+    bit_length = len(binary)
+    whole, remainder = divmod(bit_length, 4)
+    if remainder:
+        whole +=1
+    return whole*4
 
-    max_bit = (2 ** bits-1)
+def format_binary(binary, bits):
+    """Return binary at length of bits
+    In: (str) Binary Numbers
+    Out: (int) bit length"""
+    trimmed_bits = bits-len(binary)
+    return ("0"*trimmed_bits)+binary
 
-    print("unsigned bits 0-{}".format(max_bit))
-    return number+max_bit
+def ones_compliment(binary):
+    """Convert binary to ones compliment
+    In: (str) binary
+    Out: (str) ones compliment inverse"""
+    bits = bit_length_rounded(binary)
+    return ones_compliment_binary(binary,bits)
 
-def twos_compliment_decimal(number,bits):
-    return ones_compliment_decimal(number, bits) +1
+def twos_compliment(binary):
+    """Convert binary to twos compliment
+    In: (str) ones compliment Binary
+    Out: (str) two compliment Binary"""
+    bits = bit_length_rounded(binary)
+    ones_comp = ones_compliment_binary(binary,bits)
+    print(ones_comp)
+    twos_comp = twos_compliment_binary(ones_comp)
+    format_binary(twos_comp, bits)
+    return twos_comp
 
-def ones_compliment_binary(binary):
+def ones_compliment_binary(binary,bits):
     """Convert binary two ones compliment
-    In: str -- a string of binary numbers
+    In: str, int -- a string of binary numbers
     Out: str -- a integer of ones_compliment"""
     assert len(binary) > 0
-
-    ones_compliment = ""
-    for pos in binary:
-        if pos == "1":
-            ones_compliment += "0"
-        else:
-            ones_compliment += "1"
-    print("ones_compliment: {}".format(ones_compliment))
-    return ones_compliment
+    unsigned_bits = (2 ** bits-1)
+    ones_compliment = unsigned_bits- int(binary,2)
+    return format(ones_compliment, 'b')
 
 def twos_compliment_binary(binary):
-    """Add one to ones compliment to get Twos ones_compliment
-    In: str
-    Out: str
-    """
-    ones_comp = ""
-    twos_compliment = ""
-
-    ones_comp = ones_compliment_binary(binary)
-
-    # add one to ones ones_compliment
-    carry = 1
-    for index in range(len(binary)):
-        #Iterate left to right
-        val = int(binary[-1-index])
-        if val + carry == 0:
-            twos_compliment += "0"
-        elif val + carry == 1:
-            twos_compliment += "1"
-            carry = 0
-        elif val + carry == 2:
-            twos_compliment += "0"
-            carry  = 1
-    #Reverse the reversed twos_compliment
-    return twos_compliment[::-1]
+    """Convert binary into twos ones_compliment
+    In: (str) binary ones compliment
+    Out: (str) binary twos compliment"""
+    twos_compliment = format(int(binary,2)+1, 'b')
+    return twos_compliment
 
 
 
-
-
-print(twos_compliment_decimal(-95,8))
-print(twos_compliment_binary("01011111"))
+if __name__ == '__main__':
+    binary = digit_to_binary(3)
+    print(twos_compliment(binary))
+    print(twos_compliment("0011"))
