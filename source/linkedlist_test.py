@@ -101,8 +101,15 @@ class LinkedListTest(unittest.TestCase):
         assert ll.head.data == 'A'  # unchanged (at index 0)
         assert ll.tail.data == 'D'  # unchanged (now at index 3)
         assert ll.size == 4
+        ll.insert_at_index(0, '0')  # insert '0' between 'A' and 'B'
+        print(ll)
+        assert ll.head.data == '0'
+        assert ll.tail.data == 'D'
+        assert ll.size == 5
+
+
         with self.assertRaises(ValueError):
-            ll.insert_at_index(5, 'X')  # index too high
+            ll.insert_at_index(6, 'X')  # index too high
         with self.assertRaises(ValueError):
             ll.insert_at_index(-1, 'Y')  # index too low
 
@@ -155,6 +162,10 @@ class LinkedListTest(unittest.TestCase):
         assert ll.size == 3
         ll.replace('C', 'F')
         assert ll.head.data == 'D'  # unchanged
+        assert ll.tail.data == 'F'  # new tail
+        assert ll.size == 3
+        ll.replace('D', '0')
+        assert ll.head.data == '0'  # unchanged
         assert ll.tail.data == 'F'  # new tail
         assert ll.size == 3
         with self.assertRaises(ValueError):
