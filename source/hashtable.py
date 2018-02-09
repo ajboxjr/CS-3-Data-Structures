@@ -28,23 +28,6 @@ class HashTable(object):
         """Return the bucket index where the given key would be stored."""
         return hash(key) % len(self.buckets)
 
-    # def isPrime(num):
-    #     #https://inventwithpython.com/hacking/chapter23.html
-    #     if num < 2:
-    #         return False
-    #     for i in range(2, int(math.sqrt(num)) + 1):
-    #         if num % i == 0:
-    #             return False
-    #     return True
-    #
-    # def get_prime(value):
-    #     if isPrime(value):
-    #         return value
-    #     return get_prime(value-1)
-    #
-    # def _prime_hash(self):
-    #     return
-
     def load_factor(self):
         """Return the load factor, the ratio of number of entries to buckets.
         Worst Bucket O(N) N Buckets
@@ -107,10 +90,13 @@ class HashTable(object):
         # bucket = self.buckets[index]
 
         #Linear Probe
-        bucket =  self.linear_probe(key,index)
+        # bucket =  self.linear_probe(key,index)
 
         #Quadratic Probe
-        bucket = self.quadradic_probe(key,index)
+        # bucket = self.quadradic_probe(key,index)
+
+        #Double Hash probe
+        bucket = self.double_hashing_probe(key,index)
 
         entry = bucket.find(lambda key_value: key_value[0] == key) #0(k)
 
@@ -133,7 +119,10 @@ class HashTable(object):
         #bucket= self.linear_probe(key,index)
 
         #Quadratic Probing
-        bucket = self.quadradic_probe(key,index)
+        # bucket = self.quadradic_probe(key,index)
+
+        #Double Hash Probing
+        bucket = self.double_hashing_probe(key,index)
 
         entry = bucket.find(lambda key_value: key_value[0] == key)
 
@@ -166,6 +155,38 @@ class HashTable(object):
                 self.quadradic_probe(key,index,i)
         return self.buckets[index]
 
+    def isPrime(self,num):
+        # print(num)
+        if num < 2:
+            return False
+        if num == 2:
+            return True
+        for i in range(1, int(math.sqrt(num)) + 1):
+            if num % i == 0:
+                return False
+        return True
+
+    # TODO: Set on init and on resize
+    def get_prime(self,value):
+        if self.isPrime(value):
+            return value
+        return self.get_prime(value-1)
+
+    def _prime_hash(self, key):
+        prime = self.get_prime(len(self.buckets))
+        return prime-(hash(key)%prime)
+
+    def double_hashing_probe(self,key,index):
+        hash_two = self._prime_hash(key)
+        for i in range(0,len(self.buckets)-1):
+            bucket = self.buckets[(index+(i*hash_two))%len(self.buckets)]
+            entry = bucket.find(lambda key_value: key_value[0] == key)
+            if bucket.length() > 0: # not empty
+                if entry is not None: #found key
+                    return bucket # return found bucket
+                else:
+                    pass #keep iterating
+        return bucket #return empty buckt
 
 
 
@@ -183,10 +204,13 @@ class HashTable(object):
         # bucket = self.buckets[index]
 
         # Linear Probing
-        # bucket = self.linear_probe_set(index, key)
+        # bucket = self.linear_probe_set(key, index)
 
         #Quadratic Probing
-        bucket = self.quadradic_probe_set(index,key,value)
+        # bucket = self.quadradic_probe_set(key,index,value)
+
+        #Double Hash Probing
+        bucket = self.double_hashing_set(key,index)
 
         entry = bucket.find(lambda key_value: key_value[0] == key)
 
@@ -205,7 +229,7 @@ class HashTable(object):
             print('resizing load factor')
             self._resize()
 
-    def linear_probe_set(self, index,key):
+    def linear_probe_set(self, key,index):
         """Return bucket containing key or a empty bucket"""
         for i in range(0,len(self.buckets)-1):
             # print("probe index ",(index+i)%len(self.buckets))
@@ -219,7 +243,7 @@ class HashTable(object):
                 #Return None (empty Bucket)
                 return bucket
 
-    def quadradic_probe_set(self,index,key,value, i=0):
+    def quadradic_probe_set(self,key,index,value, i=0):
         new_index = (index+(i**2))%len(self.buckets)
         bucket = self.buckets[new_index]
         if bucket.length != 0:
@@ -231,6 +255,23 @@ class HashTable(object):
                 self.quadradic_probe(key,index,i)
         # else: #If Empty
         return bucket
+
+    def double_hashing_set(self,key,index):
+        hash_two = self._prime_hash(key)
+        for i in range(0,len(self.buckets)-1):
+            bucket = self.buckets[(index+(i*hash_two))%len(self.buckets)]
+            entry = bucket.find(lambda key_value: key_value[0] == key)
+            if bucket.length() > 0: # not empty
+                if entry is not None: #found key
+                    return bucket # return found bucket
+                # else:
+                #     pass #keep iterating
+            else: #empty
+                return bucket #return empty bucket
+        #trigger resize and call again
+        print('resize??')
+        self._resize()
+        return self.double_hashing_set(key,index)
 
     def delete(self, key):
         """Delete the given key and its associated value, or raise KeyError.
@@ -247,7 +288,10 @@ class HashTable(object):
         # bucket = self.linear_probe(key,index)
 
         #Quadratic Probing
-        bucket = self.quadradic_probe(key,index)
+        # bucket = self.quadradic_probe(key,index)
+
+        #Double Hash Probing
+        bucket = self.double_hashing_probe(key,index)
 
         entry = bucket.find(lambda key_value: key_value[0] == key)
 
