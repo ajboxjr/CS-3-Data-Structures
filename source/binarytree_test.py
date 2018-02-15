@@ -1,6 +1,6 @@
 #!python
 
-from binarysearchtree import BinarySearchTree, BinaryTreeNode
+from binarytree import BinarySearchTree, BinaryTreeNode
 import unittest
 
 
@@ -196,6 +196,7 @@ class BinarySearchTreeTest(unittest.TestCase):
         items = [4, 2, 6, 1, 3, 5, 7]
         tree = BinarySearchTree(items)
         # Ensure the pre-order traversal of tree items is ordered correctly
+        print(tree.items_pre_order())
         assert tree.items_pre_order() == [4, 2, 1, 3, 6, 5, 7]
 
     def test_items_post_order_with_7_numbers(self):
