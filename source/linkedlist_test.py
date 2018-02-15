@@ -95,6 +95,8 @@ class LinkedListTest(unittest.TestCase):
         assert ll.size == 2
         ll.insert_at_index(2, 'D')  # append('D')
         assert ll.head.data == 'A'  # unchanged (at index 0)
+        print(ll)
+        print(ll.tail.data)
         assert ll.tail.data == 'D'  # new tail (now at index 2)
         assert ll.size == 3
         ll.insert_at_index(2, 'C')  # insert 'C' between 'B' and 'D'

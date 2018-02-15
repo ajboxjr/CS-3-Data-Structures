@@ -23,6 +23,13 @@ class LinkedList(object):
         if iterable is not None:
             for item in iterable:
                 self.append(item)
+    # def __eq__(self, other):
+    #     print(type(other))
+    #     for i in range(self.length()):
+    #         print(self.get_at_index(i))
+    #     #     if self.get_at_index(i) != other.get_at_index(i):
+    #     #         return False
+    #     # return True
 
     def __str__(self):
         """Return a formatted string representation of this linked list."""
@@ -128,6 +135,9 @@ class LinkedList(object):
                 self.head = new_node
                 self.tail = new_node
             else:
+                # next_node = self.head.next
+                # self.head = new_node
+                # self.head.next = next_node
                 node = self.head
                 new_node.next = node
                 #If ll == 1
@@ -137,21 +147,52 @@ class LinkedList(object):
         else:
             counter = 0
             for node in self:
-                #previous node
                 if counter == index-1:
+                    # prev_node, curr_node = node, node.next
+                    # if prev_node.next == None:
+                    #     self.tail = new_node
+                    # else:
+                    #     new_node.next = curr_node.next
+                    #     node.next = new_node
+                    # break
+                #previous node
+                # if counter == index-1:
                     new_node.next = node.next
                     if node.next == None:
                         self.tail = new_node
                     node.next = new_node
                     break
                 counter +=1
-            print(self)
-
-
-
-
         self.size +=1
 
+    def replace_at_index(self, index, item):
+        # Check if the given index is out of range and if so raise an error
+        if not (0 <= index <= self.size):
+            raise ValueError('List index out of range: {}'.format(index))
+        # TODO: Find the node before the given index and insert item after it
+        new_node = Node(item)
+        if index == 0:
+            if self.is_empty():
+                self.head = new_node
+                self.tail = new_node
+            else:
+                next_node = self.head.next
+                self.head = new_node
+                self.head.next = next_node
+        else:
+            counter = 0
+            for node in self:
+                if counter == index-1:
+                    prev_node, curr_node = node, node.next
+                    if prev_node.next == None:
+                        self.tail = new_node
+                    else:
+                        new_node.next = curr_node.next
+                        node.next = new_node
+                    break
+                counter +=1
+        self.size +=1
+        print(self)
 
     def append(self, item):
         """Insert the given item at the tail of this linked list.
@@ -309,6 +350,7 @@ def test_linked_list():
     print('tail: {}'.format(ll.tail))
     print('size: {}'.format(ll.size))
     print('length: {}'.format(ll.length()))
+    print(LinkedList(['!!!!','two','three','four']))
 
 
 if __name__ == '__main__':
